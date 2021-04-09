@@ -1,0 +1,123 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label":"Client Library [Win/64bit]",
+			"type":"shell",
+			"command":[
+                "x86_64-w64-mingw32-gcc",
+                "-shared",
+                "-fshort-wchar",
+                "'-Wl,--subsystem,native'",                                
+                "-nostartfiles", 
+                "-nostdlib",
+                "'-Wl,-eDllMain'",
+                "-DTARGET_OS_WINDOWS",
+                "${workspaceFolder}/src/client.c",             
+                "-static", 
+                "-static-libgcc",
+                "-lntdll",
+                "-lgcc",
+                "-lws2_32",
+                "-o ${workspaceFolder}/bin/afunixclient64.dll"			
+			],
+			"presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }			
+		},
+		{
+			"label":"Client Library [Win/32bit]",
+			"type":"shell",
+			"command":[
+                "i686-w64-mingw32-gcc",
+                "-shared",
+				"-m32",
+                "-fshort-wchar",
+                "'-Wl,--subsystem,native'",                                
+                "-nostartfiles", 
+                "-nostdlib",
+                "'-Wl,-e_DllMain@12'",
+                "-DTARGET_OS_WINDOWS",
+                "${workspaceFolder}/src/client.c",             
+                "-static", 
+                "-static-libgcc",
+                "-lntdll",
+                "-lgcc",
+                "-lws2_32",
+                "-o ${workspaceFolder}/bin/afunixclient32.dll"			
+			],
+			"presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }			
+		},
+		{
+			"label":"Client Library [Linux/64bit]",
+			"type":"shell",
+			"command":[
+                "/usr/bin/gcc",
+                "-shared",
+                "${workspaceFolder}/src/client.c",             
+                "-static-libgcc",
+                "-lgcc",
+                "-o ${workspaceFolder}/bin/afunixclient64.so"
+			],
+			"presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }			
+		},
+		{
+			"label":"Client Library [Linux/32bit]",
+			"type":"shell",
+			"command":[
+                "/usr/bin/gcc",
+                "-shared",
+				"-m32",
+                "${workspaceFolder}/src/client.c",             
+                "-static-libgcc",
+                "-lgcc",
+                "-o ${workspaceFolder}/bin/afunixclient32.so"
+			],
+			"presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }			
+		},
+        {
+            "label": "Client Library [Mac/64-bit]",
+            "type": "shell",
+            "command": [
+                "/usr/bin/gcc",
+                "-shared",
+                "${workspaceFolder}/src/client.c",             
+                "-o ${workspaceFolder}/bin/afunixclient64.dylib"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }				
+	]
+}
