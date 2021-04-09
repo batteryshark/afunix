@@ -1,5 +1,6 @@
 import platform
 import os
+import socket
 from threading import Thread
 
 SOMAXCONN = 0x7fffffff
@@ -66,7 +67,7 @@ class AFUnixServer:
                     self.request_processor(args)
             else:
                 client, addr = self.server.accept()
-                data = client.recv(PACKET_LEN)
+                data = client.recv(self.buffer_size)
                 if data:
                     args = [data.decode('utf-8',errors="replace")]
                     args.extend(self.request_add_args)
@@ -95,7 +96,7 @@ class AFUnixServer:
                 ws2_32.shutdown_socket(client)                    
             else:
                 client, addr = self.server.accept()
-                data = client.recv(PACKET_LEN)
+                data = client.recv(self.buffer_size)
                 if data:
                     args = [data.decode('utf-8',errors="replace")]
                     args.extend(self.request_add_args)                                      
