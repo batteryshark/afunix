@@ -21,28 +21,37 @@ typedef struct sockaddr_un{
 #include "client.h"
 
 #ifdef TARGET_OS_WINDOWS
+static int lib_initialized = 0;
 WSADATA WsaData = {0};
 // Because we don't always have the luxury of MSVCRT.
 #ifndef strlen
-size_t __cdecl strlen(const char* str){
+size_t __cdecl xstrlen(const char* str){
         const char* s;
         if (str == 0) return 0;
         for (s = str; *s; ++s);
         return s - str;
 }
+#define strlen xstrlen
 #endif
 #ifndef strcpy
-char *strcpy(char *dest, const char *src){
+char *xstrcpy(char *dest, const char *src){
     size_t i;
     for (i = 0; src[i] != '\0'; i++)
         dest[i] = src[i];
     dest[i] = '\0';
     return dest;
 }
+#define strcpy xstrcpy
 #endif
 #endif
 
 int create_socket(const char* path){
+    #ifdef TARGET_OS_WINDOWS
+    if(!lib_initialized){
+        WSAStartup(MAKEWORD(2, 2), &WsaData);
+        lib_initialized = 1;
+    }
+    #endif
     // Create a AF_UNIX stream server socket.
     int sd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sd < 0) {return 0;}
@@ -77,20 +86,3 @@ EXPORTABLE int SendRecvMsg(const char* path, char* request, char* response, int 
     if(bytes_read == -1){return 0;}
     return 1;
 }
-
-
-
-#ifdef TARGET_OS_WINDOWS
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
-    switch (ul_reason_for_call) {
-    case DLL_PROCESS_ATTACH:        
-        WSAStartup(MAKEWORD(2, 2), &WsaData);
-        break;
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH:
-        break;
-    }
-    return TRUE;
-}
-#endif
